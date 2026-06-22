@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#070A12" />
+  <title>Villas Terra III · Web móvil</title>
+  <style>
+    :root{
+      --bg:#070A12;
+      --ink:#F8FAFF;
+      --muted:rgba(248,250,255,.66);
+      --soft:rgba(248,250,255,.42);
+      --card:rgba(255,255,255,.105);
+      --card2:rgba(255,255,255,.16);
+      --line:rgba(255,255,255,.18);
+      --blue:#1FA2FF;
+      --cyan:#38DDFE;
+      --red:#FF4343;
+      --orange:#FF9A2F;
+      --green:#35D77A;
+      --mint:#3EF0D0;
+      --purple:#BC52FF;
+      --pink:#FF3D7D;
+      --yellow:#FFD60A;
+      --indigo:#6D7CFF;
+      --brown:#C89462;
+      --teal:#19D1D1;
+      --radius:28px;
+      --tabH:82px;
+      --safe:env(safe-area-inset-bottom,0px);
+    }
+
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 15% -4%, rgba(31,162,255,.25), transparent 30%),
+        radial-gradient(circle at 90% 18%, rgba(255,67,67,.16), transparent 32%),
+        radial-gradient(circle at 10% 95%, rgba(62,240,208,.12), transparent 34%),
+        linear-gradient(180deg,#05070D 0%,#070A12 45%,#05070D 100%);
+      color:var(--ink);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Arial,sans-serif;
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+      background-size:34px 34px;
+      mask-image:linear-gradient(to bottom,transparent,black 12%,black 78%,transparent);
+    }
+
+    button,input,select,textarea{font:inherit}
+    button{border:0;background:transparent;color:inherit;cursor:pointer}
+    input,select,textarea{
+      width:100%;
+      color:var(--ink);
+      background:rgba(255,255,255,.09);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px 14px;
+      outline:none;
+    }
+    label{display:block;margin:12px 0 7px;color:var(--muted);font-size:13px;font-weight:800}
+
+    .app{min-height:100vh;padding-bottom:calc(var(--tabH) + var(--safe) + 16px)}
+    .screen{display:none;padding:10px 18px 28px;animation:enter .25s ease}
+    .screen.active{display:block}
+    @keyframes enter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+    .topbar{
+      position:sticky;top:0;z-index:30;
+      display:flex;justify-content:center;align-items:center;
+      height:48px;margin:0 -18px 8px;
+      background:linear-gradient(180deg,rgba(7,10,18,.88),rgba(7,10,18,.55),transparent);
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+      font-weight:900;
+    }
+
+    .hero{padding:8px 0 14px}
+    .eyebrow{
+      display:inline-flex;gap:8px;align-items:center;
+      padding:7px 11px;border-radius:999px;
+      background:rgba(31,162,255,.14);
+      color:var(--blue);font-size:12px;font-weight:900;
+      border:1px solid rgba(31,162,255,.25);
+    }
+    h1{
+      margin:14px 0 8px;
+      font-size:clamp(42px,12vw,62px);
+      letter-spacing:-2.2px;line-height:.92;font-weight:950;
+    }
+    .subtitle{margin:0;color:var(--muted);font-size:21px;line-height:1.22;font-weight:600}
+
+    .glass{
+      position:relative;overflow:hidden;
+      background:linear-gradient(145deg,rgba(255,255,255,.17),rgba(255,255,255,.075));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:0 18px 42px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.16);
+      backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+    }
+    .glass::before{
+      content:"";position:absolute;inset:0;pointer-events:none;
+      background:
+        radial-gradient(circle at 18% 0%,rgba(255,255,255,.20),transparent 28%),
+        linear-gradient(145deg,rgba(255,255,255,.08),transparent 55%);
+    }
+    .glass>*{position:relative}
+
+    .section{margin-top:22px}
+    .section-head{margin-bottom:12px}
+    .section-head h2{margin:0;font-size:25px;letter-spacing:-.7px;line-height:1.05;font-weight:950}
+    .section-head p{margin:7px 0 0;color:var(--muted);font-size:15px;line-height:1.28}
+
+    .quick-row{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 5px;scrollbar-width:none}
+    .quick-row::-webkit-scrollbar{display:none}
+    .focus{
+      flex:0 0 auto;min-width:118px;
+      padding:13px 15px;border-radius:999px;
+      display:flex;align-items:center;gap:9px;
+      font-size:17px;font-weight:950;
+      transition:.18s transform,.18s opacity;
+    }
+    .focus:active{transform:scale(.95);opacity:.82}
+
+    .dash-card{
+      min-width:220px;flex:0 0 220px;
+      padding:16px;border-radius:28px;
+    }
+    .dash-card strong{display:block;font-size:34px;letter-spacing:-1px;margin:14px 0 3px}
+    .dash-card span{color:var(--muted);font-size:16px;font-weight:700}
+    .iconBubble{
+      width:50px;height:50px;border-radius:18px;display:grid;place-items:center;
+      font-size:23px;font-weight:900;
+    }
+
+    .mini-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+    .op{
+      min-height:94px;padding:10px 7px;text-align:center;border-radius:24px;
+      transition:.18s transform,.18s opacity;
+    }
+    .op:active{transform:scale(.94);opacity:.82}
+    .op i{font-style:normal;display:block;font-size:23px;margin-bottom:7px}
+    .op b{display:block;font-size:21px}
+    .op span{display:block;margin-top:5px;color:var(--muted);font-size:11px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    .two-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .module{
+      min-height:190px;padding:15px;text-align:left;transition:.18s transform,.18s opacity;
+    }
+    .module:active{transform:scale(.97);opacity:.82}
+    .moduleTop{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+    .moduleIcon{width:54px;height:54px;border-radius:20px;display:grid;place-items:center;color:white;font-size:25px}
+    .tag{display:inline-flex;align-items:center;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:950}
+    .module h3{margin:15px 0 8px;font-size:18px;line-height:1.05}
+    .module p{margin:0;color:var(--muted);font-size:13px;line-height:1.32}
+    .moduleFoot{display:flex;justify-content:space-between;align-items:center;margin-top:13px;color:var(--soft);font-size:12px;font-weight:900}
+
+    .rowList{display:grid;gap:12px}
+    .row{
+      width:100%;padding:15px;text-align:left;display:flex;gap:13px;align-items:flex-start;
+      transition:.18s transform,.18s opacity;
+    }
+    .row:active{transform:scale(.98);opacity:.85}
+    .row h3{margin:0;font-size:18px;line-height:1.15}
+    .row p{margin:6px 0 0;color:var(--muted);font-size:14px;line-height:1.32}
+    .row small{display:block;margin-top:7px;color:var(--soft);font-weight:800}
+    .rowContent{flex:1;min-width:0}
+
+    .profile{
+      padding:24px;text-align:center;
+    }
+    .profileIcon{
+      width:100px;height:100px;margin:0 auto 14px;border-radius:50%;
+      display:grid;place-items:center;font-size:48px;
+      color:var(--blue);background:rgba(31,162,255,.14);
+      border:1px solid rgba(31,162,255,.26);
+    }
+    .profile h1{font-size:36px;margin:0 0 6px}
+    .profile p{margin:0;color:var(--muted);font-size:17px}
+    .login{display:inline-flex;margin-top:12px;padding:7px 12px;border-radius:999px;background:rgba(53,215,122,.14);color:var(--green);font-size:12px;font-weight:950}
+
+    .formBox{padding:16px}
+    .primary{
+      width:100%;margin-top:14px;padding:15px;border-radius:19px;
+      background:linear-gradient(135deg,var(--blue),var(--cyan));
+      color:white;font-weight:950;box-shadow:0 14px 26px rgba(31,162,255,.22);
+    }
+    .danger{background:linear-gradient(135deg,var(--red),#ff7a45)}
+    .plainBtn{background:rgba(255,255,255,.10);box-shadow:none;border:1px solid var(--line)}
+
+    .tabbar{
+      position:fixed;left:12px;right:12px;bottom:calc(10px + var(--safe));z-index:90;
+      height:76px;padding:8px;display:grid;grid-template-columns:repeat(5,1fr);gap:2px;
+      border-radius:38px;background:rgba(26,28,33,.78);border:1px solid rgba(255,255,255,.16);
+      box-shadow:0 22px 48px rgba(0,0,0,.45);
+      backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+    }
+    .tab{border-radius:31px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:rgba(255,255,255,.82)}
+    .tab.active{background:rgba(255,255,255,.12);color:var(--blue)}
+    .tabIcon{font-size:23px;line-height:1}.tabLabel{font-size:10.5px;font-weight:900;line-height:1}
+
+    .modalWrap{position:fixed;inset:0;z-index:200;display:none;align-items:flex-end;background:rgba(0,0,0,.56);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+    .modalWrap.active{display:flex}
+    .modal{
+      width:100%;max-height:88vh;overflow:auto;
+      border-radius:34px 34px 0 0;padding:14px 18px calc(20px + var(--safe));
+      background:linear-gradient(180deg,rgba(30,32,40,.98),rgba(12,14,20,.98));
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow:0 -28px 60px rgba(0,0,0,.48);
+    }
+    .handle{width:48px;height:5px;border-radius:99px;background:rgba(255,255,255,.25);margin:0 auto 18px}
+    .heroModal{min-height:174px;padding:22px;display:grid;place-items:center;text-align:center;border-radius:30px;margin-bottom:14px}
+    .heroModal .big{font-size:64px;margin-bottom:10px}.heroModal h2{margin:0;font-size:26px;letter-spacing:-.6px;line-height:1.05}.heroModal p{display:inline-flex;margin:10px 0 0;padding:7px 12px;border-radius:999px;background:rgba(0,0,0,.18);color:rgba(255,255,255,.86);font-size:12px;font-weight:950}
+    .info{padding:15px;margin-top:11px}
+    .info small{display:block;color:var(--muted);text-transform:uppercase;letter-spacing:.35px;font-size:11px;font-weight:950;margin-bottom:7px}
+    .info p{margin:0;font-size:15px;line-height:1.36}
+    .actions{display:grid;gap:9px;margin-top:12px}.action{padding:12px;border-radius:17px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);font-size:14px;line-height:1.3}
+    .qrBox{width:238px;height:238px;margin:16px auto;padding:16px;border-radius:28px;background:white;display:grid;place-items:center;box-shadow:0 18px 42px rgba(0,0,0,.28)}
+    .qrBox img{width:206px;height:206px;image-rendering:pixelated}
+    .toast{position:fixed;left:18px;right:18px;bottom:calc(100px + var(--safe));z-index:250;padding:13px 15px;border-radius:20px;background:rgba(35,215,122,.92);color:white;font-weight:950;display:none;box-shadow:0 16px 34px rgba(0,0,0,.38)}
+    .toast.show{display:block;animation:toast .22s ease}
+    @keyframes toast{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+    @media(min-width:720px){
+      .screen{max-width:560px;margin:0 auto}.tabbar{max-width:560px;margin:0 auto}
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <section id="inicio" class="screen active">
+      <div class="topbar">Inicio</div>
+      <header class="hero">
+        <span class="eyebrow">⚡ Web móvil · Villas Terra III</span>
+        <h1>Panel de administración vecinal</h1>
+        <p class="subtitle">Más ligero que la app de Xcode, con la misma esencia visual: glass, accesos rápidos, QR, CCTV y perfil por casa.</p>
+      </header>
+
+      <div class="quick-row" id="focusRow"></div>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Resumen vivo</h2>
+          <p>Lo más importante queda arriba para reducir scroll.</p>
+        </div>
+        <div class="quick-row" id="metricsRow"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Operación diaria</h2>
+          <p>Guardia, limpieza, portón, QR, multas y reportes.</p>
+        </div>
+        <div class="mini-grid" id="operationGridHome"></div>
+      </section>
+
+      <section class="section" id="mainAnnouncement"></section>
+    </section>
+
+    <section id="operacion" class="screen">
+      <div class="topbar">Operación</div>
+      <div class="section-head">
+        <h2>Centro operativo</h2>
+        <p>Todo lo que pasa en la privada, ordenado por flujo de trabajo.</p>
+      </div>
+      <div class="mini-grid" id="operationGridFull"></div>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Nuevo reporte</h2>
+          <p>Registra una incidencia y actualiza la bitácora local.</p>
+        </div>
+        <div class="formBox glass">
+          <label for="incidentType">Tipo</label>
+          <select id="incidentType">
+            <option>Área común sucia</option>
+            <option>Lámpara apagada</option>
+            <option>Mascota sin correa</option>
+            <option>Ruido nocturno</option>
+            <option>Portón vehicular lento</option>
+            <option>Peatón / acceso obstruido</option>
+          </select>
+
+          <label for="incidentHouse">Casa relacionada</label>
+          <select id="incidentHouse"></select>
+
+          <label for="incidentDetail">Detalle</label>
+          <textarea id="incidentDetail" rows="3" placeholder="Describe el reporte con precisión..."></textarea>
+
+          <button class="primary" onclick="addIncident()">Registrar incidencia</button>
+        </div>
+      </section>
+    </section>
+
+    <section id="comunicados" class="screen">
+      <div class="topbar">Comunicados</div>
+      <div class="section-head">
+        <h2>Comunicados oficiales</h2>
+        <p>Agua, Protección Civil, convivencia y administración.</p>
+      </div>
+      <div class="rowList" id="announcementsList"></div>
+
+      <section class="section">
+        <div class="section-head"><h2>Módulos preventivos</h2><p>Información que debe estar separada del ruido del chat.</p></div>
+        <div class="two-grid" id="communicationModules"></div>
+      </section>
+    </section>
+
+    <section id="accesos" class="screen">
+      <div class="topbar">Accesos</div>
+      <div class="section-head">
+        <h2>Accesos, QR y CCTV</h2>
+        <p>Visitantes, comida, gas, técnicos, portón y cámaras por IP local.</p>
+      </div>
+
+      <div class="formBox glass">
+        <label for="qrHouse">Casa destino</label>
+        <select id="qrHouse"></select>
+
+        <label for="qrService">Servicio</label>
+        <select id="qrService">
+          <option>Comida</option>
+          <option>Gas</option>
+          <option>Técnico internet</option>
+          <option>Albañil</option>
+          <option>Paquetería</option>
+          <option>Proveedor externo</option>
+        </select>
+
+        <label for="qrMinutes">Validez</label>
+        <select id="qrMinutes">
+          <option value="30">30 minutos</option>
+          <option value="45">45 minutos</option>
+          <option value="60">60 minutos</option>
+          <option value="120">120 minutos</option>
+        </select>
+
+        <button class="primary" onclick="generateQR()">Generar QR temporal</button>
+      </div>
+
+      <section class="section">
+        <div class="section-head"><h2>Visitantes recientes</h2><p>Entradas y servicios registrados.</p></div>
+        <div class="rowList" id="visitorsList"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head"><h2>Cámaras locales</h2><p>Requiere estar en la misma red Wi-Fi del DVR/NVR.</p></div>
+        <div class="two-grid" id="cameraGrid"></div>
+      </section>
+    </section>
+
+    <section id="perfil" class="screen">
+      <div class="topbar">Perfil</div>
+      <div class="profile glass" id="profileCard"></div>
+
+      <section class="section">
+        <div class="formBox glass">
+          <label for="activeHouseSelect">Cambiar casa con sesión iniciada</label>
+          <select id="activeHouseSelect" onchange="setActiveHouse(this.value)"></select>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head"><h2>Registro residencial</h2><p>Dueños, inquilinos, controles de portón y multas.</p></div>
+        <div class="mini-grid" id="registryCounters"></div>
+        <div class="rowList" id="registryRows" style="margin-top:12px"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head"><h2>Bitácora</h2><p>Últimos movimientos guardados en este navegador.</p></div>
+        <div class="rowList" id="logList"></div>
+        <button class="primary plainBtn" onclick="exportData()">Exportar datos JSON</button>
+        <button class="primary danger" onclick="resetDemo()">Reset demo</button>
+      </section>
+    </section>
+  </main>
+
+  <nav class="tabbar">
+    <button class="tab active" data-tab="inicio"><span class="tabIcon">⌂</span><span class="tabLabel">Inicio</span></button>
+    <button class="tab" data-tab="operacion"><span class="tabIcon">◎</span><span class="tabLabel">Operación</span></button>
+    <button class="tab" data-tab="comunicados"><span class="tabIcon">◖</span><span class="tabLabel">Comunicados</span></button>
+    <button class="tab" data-tab="accesos"><span class="tabIcon">▦</span><span class="tabLabel">Accesos</span></button>
+    <button class="tab" data-tab="perfil"><span class="tabIcon">◉</span><span class="tabLabel">Perfil</span></button>
+  </nav>
+
+  <div class="modalWrap" id="modalWrap">
+    <div class="modal">
+      <div class="handle"></div>
+      <div id="modalContent"></div>
+      <button class="primary plainBtn" onclick="closeModal()">Cerrar</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+const COLORS={blue:"#1FA2FF",cyan:"#38DDFE",red:"#FF4343",orange:"#FF9A2F",green:"#35D77A",mint:"#3EF0D0",purple:"#BC52FF",pink:"#FF3D7D",yellow:"#FFD60A",indigo:"#6D7CFF",brown:"#C89462",teal:"#19D1D1",black:"#111"};
+const STORAGE_KEY="villas_terra_iii_mobile_v2";
+
+const seed={
+  activeResidentId:"casa01",
+  waterLevel:72,
+  pendingFee:850,
+  residents:[
+    {id:"casa01",house:"Casa 01",name:"Familia Ponce",type:"Dueño",livingTime:"8 años",peopleCount:4,status:"Al corriente",notes:"Propietario residente. Sin adeudos activos.",color:"blue"},
+    {id:"casa02",house:"Casa 02",name:"Familia López",type:"Inquilino",livingTime:"1 año 4 meses",peopleCount:3,status:"Cuota pendiente",notes:"Contrato vigente. Actualizar datos de contacto.",color:"teal"},
+    {id:"casa03",house:"Casa 03",name:"Familia García",type:"Dueño",livingTime:"5 años",peopleCount:2,status:"Al corriente",notes:"Cuenta con dos controles registrados.",color:"blue"},
+    {id:"casa04",house:"Casa 04",name:"Familia Hernández",type:"Inquilino",livingTime:"8 meses",peopleCount:2,status:"Revisión",notes:"Pendiente actualizar placas vehiculares.",color:"teal"}
+  ],
+  visitors:[
+    {id:"vis01",name:"Paquetería",detail:"Entrega para Casa 03",time:"10:42",status:"Registrado",icon:"📦",color:"blue"},
+    {id:"vis02",name:"Técnico hidráulico",detail:"Revisión de cuarto de bombas",time:"12:15",status:"Servicio",icon:"🔧",color:"orange"},
+    {id:"vis03",name:"Comida",detail:"Pedido para Casa 01 con QR temporal",time:"14:05",status:"QR",icon:"🥡",color:"orange"}
+  ],
+  incidents:[
+    {id:"inc01",title:"Portón vehicular lento",detail:"El motor tarda más de lo normal en cerrar. Requiere revisión preventiva.",priority:"Alta",date:"Hoy",icon:"⚠️",color:"red"},
+    {id:"inc02",title:"Área común sucia",detail:"Se detectaron residuos en zona de contenedores.",priority:"Media",date:"Hoy",icon:"🗑️",color:"mint"},
+    {id:"inc03",title:"Lámpara apagada",detail:"Luminaria sin funcionamiento en pasillo interior.",priority:"Media",date:"Ayer",icon:"💡",color:"yellow"}
+  ],
+  logs:[
+    {id:"log01",title:"QR de servicio generado",detail:"Acceso temporal preparado para entrega o proveedor externo.",icon:"▦",color:"black"},
+    {id:"log02",title:"Control de portón verificado",detail:"Control asignado a Casa 04 con estado activo.",icon:"🔑",color:"indigo"},
+    {id:"log03",title:"CCTV acceso principal verificado",detail:"Cámara 01 lista para conexión por IP local.",icon:"🎥",color:"cyan"}
+  ]
+};
+
+let data=loadData();
+
+const focusItems=[
+  {id:"agua",title:"Agua",subtitle:"Control hídrico",icon:"💧",color:"blue",detail:"Estado de cisterna, bombas, fugas, consumo y alertas preventivas.",actions:["Consultar nivel de cisterna.","Reportar fuga o desperdicio.","Revisar estado de bombas.","Generar aviso preventivo."]},
+  {id:"cctv",title:"CCTV",subtitle:"Video local",icon:"🎥",color:"cyan",detail:"Acceso a 6 cámaras por IP local dentro de la red de la privada.",actions:["Abrir cámara por IP local.","Registrar verificación visual.","Consultar ubicación.","Preparar integración con DVR/NVR."]},
+  {id:"seguridad",title:"Seguridad",subtitle:"Portón, QR y convivencia",icon:"🛡️",color:"red",detail:"Controles del portón, QR, rondines, peatones, mascotas, multas y Protección Civil.",actions:["Registrar control de portón.","Generar QR de servicio.","Registrar multa.","Reportar evento de seguridad."]}
+];
+
+const operations=[
+  {id:"guardia",title:"Guardia",value:"6",icon:"🪪",color:"brown",detail:"Novedades de turno, proveedores, paquetería y observaciones del acceso.",actions:["Registrar entrada/salida de turno.","Agregar novedad del acceso.","Documentar proveedor o paquetería.","Escalar observación de seguridad."]},
+  {id:"limpieza",title:"Limpieza",value:"4",icon:"✨",color:"mint",detail:"Áreas comunes limpias, zonas sucias, contenedores, pasillos y evidencia.",actions:["Marcar área limpia.","Reportar zona sucia.","Asignar seguimiento.","Guardar evidencia visual."]},
+  {id:"rondin",title:"Rondín",value:"2",icon:"🌙",color:"purple",detail:"Recorridos nocturnos por acceso, pasillos, cámaras, portón y zonas sensibles.",actions:["Completar rondín nocturno.","Registrar zona sin novedad.","Reportar hallazgo crítico.","Cruzar evento con CCTV."]},
+  {id:"cctv",title:"CCTV",value:"6",icon:"🎥",color:"cyan",detail:"Revisión de cámaras por IP local y estado de conexión.",actions:["Abrir cámara local.","Verificar señal.","Registrar revisión.","Revisar IP y ubicación."]},
+  {id:"luz",title:"Lámparas",value:"1",icon:"💡",color:"yellow",detail:"Luminarias apagadas, intermitentes o dañadas en áreas comunes.",actions:["Reportar lámpara apagada.","Ubicar zona afectada.","Asignar prioridad.","Cerrar reparación."]},
+  {id:"mascotas",title:"Mascotas",value:"1",icon:"🐾",color:"pink",detail:"Correa, heces, ruido, agresión o animales sin supervisión.",actions:["Reportar mascota sin correa.","Reportar heces sin recoger.","Registrar ruido o agresión.","Enviar aviso preventivo."]},
+  {id:"peaton",title:"Peatón",value:"1",icon:"🚶",color:"teal",detail:"Respeto al paso peatonal, rampas, accesos y libre tránsito.",actions:["Reportar obstrucción.","Registrar zona de riesgo.","Notificar a administración.","Cerrar seguimiento."]},
+  {id:"pcivil",title:"P. Civil",value:"2",icon:"⛑️",color:"red",detail:"Simulacros, extintores, botiquín, señalización y punto de reunión.",actions:["Registrar simulacro.","Revisar extintor.","Verificar botiquín.","Actualizar ruta de evacuación."]},
+  {id:"porton",title:"Portón",value:"14",icon:"🔑",color:"indigo",detail:"Controles activos, pendientes, duplicados, extraviados y asignados por casa.",actions:["Registrar control nuevo.","Dar de baja control perdido.","Asignar control a casa.","Verificar funcionamiento."]},
+  {id:"multas",title:"Multas",value:"3",icon:"📄",color:"red",detail:"Historial de multas por convivencia, mascotas, limpieza, ruido y reglamento.",actions:["Registrar multa.","Agregar evidencia.","Marcar como pagada.","Consultar historial."]},
+  {id:"qr",title:"QR",value:"4",icon:"▦",color:"black",detail:"QR temporal para comida, gas, albañil, internet, paquetería o proveedor.",actions:["Generar QR por casa.","Definir validez.","Registrar tipo de servicio.","Enviar instrucción al proveedor."]}
+];
+
+const modules=[
+  {id:"agua",shortTitle:"Agua",title:"Control hídrico IoT",description:"Monitoreo de cisternas, bombas, ciclos de operación y autonomía estimada.",summary:"Supervisa nivel de agua, bombas y riesgo de desabasto.",metric:"72%",status:"Estable",aiHint:"Predicción",icon:"💧",color:"blue",features:["Lectura de cisterna.","Estado operativo de bombas.","Autonomía estimada.","Reporte de fugas."]},
+  {id:"pcivil",shortTitle:"P. Civil",title:"Protección Civil",description:"Simulacros, extintores, botiquín, rutas de evacuación y punto de reunión.",summary:"Documenta prevención y protocolos de emergencia.",metric:"2",status:"Revisión",aiHint:"Prevención",icon:"⛑️",color:"red",features:["Registro de simulacros.","Revisión de extintores.","Botiquín y señalización.","Rutas de evacuación."]},
+  {id:"seguridad",shortTitle:"Seguridad",title:"Seguridad y convivencia",description:"Rondines, peatones, mascotas, cámaras, guardia y reportes preventivos.",summary:"Eventos de seguridad y convivencia vecinal.",metric:"Activo",status:"Rojo",aiHint:"Supervisión",icon:"🛡️",color:"red",features:["Rondín nocturno.","Reportes peatonales.","Mascotas.","Lámparas y zonas sucias."]},
+  {id:"porton",shortTitle:"Portón",title:"Controles del portón",description:"Controles asignados, activos, extraviados, duplicados y dados de baja.",summary:"Qué control pertenece a cada casa y cuándo fue revisado.",metric:"14",status:"Activos",aiHint:"Acceso",icon:"🔑",color:"indigo",features:["Alta de control.","Baja por extravío.","Casa asignada.","Historial."]},
+  {id:"multas",shortTitle:"Multas",title:"Registro de multas",description:"Sanciones por convivencia, mascotas, limpieza, ruido, portón o reglamento.",summary:"Motivo, evidencia, monto, casa y estado de pago.",metric:"3",status:"Pendiente",aiHint:"Historial",icon:"📄",color:"red",features:["Concepto.","Casa responsable.","Monto y fecha.","Estado de pago."]},
+  {id:"limpieza",shortTitle:"Limpieza",title:"Áreas comunes limpias",description:"Pasillos, contenedores, accesos, jardines y áreas comunes.",summary:"Zonas limpias, zonas sucias y evidencia de limpieza.",metric:"4",status:"Verificado",aiHint:"Checklist",icon:"✨",color:"mint",features:["Checklist.","Zonas con residuos.","Evidencia.","Seguimiento."]}
+];
+
+const announcements=[
+  {id:"a1",title:"Mantenimiento de bombas de agua",body:"El próximo sábado se realizará revisión preventiva de bombas, válvulas y sistema de llenado de cisterna.",level:"Importante",date:"28 mayo 2026",color:"orange"},
+  {id:"a2",title:"QR para entregas y servicios",body:"La página permite generar QR temporales para comida, gas, albañiles, técnicos de internet, paquetería y proveedores externos.",level:"Nuevo",date:"21 junio 2026",color:"black"},
+  {id:"a3",title:"Convivencia y áreas comunes",body:"Se recuerda respetar pasos peatonales, recoger residuos, cuidar mascotas y reportar lámparas o áreas sucias.",level:"Convivencia",date:"29 mayo 2026",color:"red"}
+];
+
+const cameras=[
+  {id:"cam01",name:"Cámara 01",location:"Acceso principal",ip:"192.168.1.101",url:"http://192.168.1.101",summary:"Monitoreo del acceso principal, visitantes y proveedores.",icon:"🎥",color:"cyan"},
+  {id:"cam02",name:"Cámara 02",location:"Portón vehicular",ip:"192.168.1.102",url:"http://192.168.1.102",summary:"Vista del portón y entradas vehiculares.",icon:"🚗",color:"indigo"},
+  {id:"cam03",name:"Cámara 03",location:"Estacionamiento",ip:"192.168.1.103",url:"http://192.168.1.103",summary:"Supervisión de vehículos y circulación.",icon:"🅿️",color:"blue"},
+  {id:"cam04",name:"Cámara 04",location:"Área común",ip:"192.168.1.104",url:"http://192.168.1.104",summary:"Vista de convivencia, limpieza y mascotas.",icon:"🌳",color:"green"},
+  {id:"cam05",name:"Cámara 05",location:"Pasillo interior",ip:"192.168.1.105",url:"http://192.168.1.105",summary:"Control de tránsito peatonal y rondines.",icon:"🚶",color:"purple"},
+  {id:"cam06",name:"Cámara 06",location:"Perímetro",ip:"192.168.1.106",url:"http://192.168.1.106",summary:"Cobertura posterior y barda perimetral.",icon:"🛡️",color:"orange"}
+];
+
+function loadData(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||structuredClone(seed)}catch{return structuredClone(seed)}}
+function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(data))}
+function c(name){return COLORS[name]||name||"#fff"}
+function tint(name,a=.14){const hex=c(name);const alpha=Math.round(a*255).toString(16).padStart(2,"0");return `background:${hex}${alpha};color:${hex};`}
+function esc(s){return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+function now(){return new Date().toLocaleTimeString("es-MX",{hour:"2-digit",minute:"2-digit"})}
+function addLog(title,detail,icon,color){data.logs.unshift({id:"log"+Date.now(),title,detail,icon,color});data.logs=data.logs.slice(0,12);save();renderAll()}
+
+function initTabs(){
+  document.querySelectorAll(".tab").forEach(tab=>{
+    tab.onclick=()=>{
+      document.querySelectorAll(".tab,.screen").forEach(x=>x.classList.remove("active"));
+      tab.classList.add("active");
+      document.getElementById(tab.dataset.tab).classList.add("active");
+      scrollTo({top:0,behavior:"smooth"});
+    };
+  });
+}
+
+function fillSelects(){
+  const opts=data.residents.map(r=>`<option value="${r.id}">${esc(r.house)} · ${esc(r.name)}</option>`).join("");
+  ["incidentHouse","qrHouse","activeHouseSelect"].forEach(id=>{
+    const el=document.getElementById(id); if(el){el.innerHTML=opts; el.value=data.activeResidentId;}
+  });
+}
+
+function cardIcon(icon,color){return `<div class="iconBubble" style="${tint(color)}">${icon}</div>`}
+function renderFocus(){
+  document.getElementById("focusRow").innerHTML=focusItems.map(x=>`<button class="focus glass" style="${tint(x.color,.13)}" onclick="openFocus('${x.id}')"><span>${x.icon}</span><span>${x.title}</span></button>`).join("");
+}
+function renderMetrics(){
+  const metrics=[
+    {title:"Cuota pendiente",value:"$"+data.pendingFee,icon:"💳",color:"orange"},
+    {title:"Incidencias",value:data.incidents.length,icon:"!",color:"red"},
+    {title:"Visitantes",value:data.visitors.length,icon:"●●",color:"blue"},
+    {title:"Agua",value:data.waterLevel+"%",icon:"💧",color:data.waterLevel<35?"red":"green"}
+  ];
+  document.getElementById("metricsRow").innerHTML=metrics.map(m=>`<article class="dash-card glass">${cardIcon(m.icon,m.color)}<strong>${esc(m.value)}</strong><span>${esc(m.title)}</span></article>`).join("");
+}
+function renderOps(){
+  const html=operations.map(o=>`<button class="op glass" onclick="openOperation('${o.id}')"><i style="color:${c(o.color)}">${o.icon}</i><b>${o.value}</b><span>${o.title}</span></button>`).join("");
+  document.getElementById("operationGridHome").innerHTML=html;
+  document.getElementById("operationGridFull").innerHTML=html;
+}
+function moduleHTML(m){return `<button class="module glass" onclick="openModule('${m.id}')"><div class="moduleTop"><div class="moduleIcon" style="background:linear-gradient(135deg,${c(m.color)},rgba(255,255,255,.18));">${m.icon}</div><div style="text-align:right;font-weight:950">${esc(m.metric)}<br><span class="tag" style="${tint(m.color)}">${esc(m.status)}</span></div></div><h3>${esc(m.shortTitle)}</h3><p>${esc(m.summary)}</p><div class="moduleFoot"><span>✦ ${esc(m.aiHint)}</span><span style="color:${c(m.color)}">›</span></div></button>`}
+function renderAnnouncements(){
+  document.getElementById("mainAnnouncement").innerHTML=`<div class="section-head"><h2>Comunicado principal</h2><p>Resumen oficial más reciente.</p></div>${announcementHTML(announcements[0])}`;
+  document.getElementById("announcementsList").innerHTML=announcements.map(announcementHTML).join("");
+  document.getElementById("communicationModules").innerHTML=modules.filter(m=>["Agua","P. Civil","Seguridad"].includes(m.shortTitle)).map(moduleHTML).join("");
+}
+function announcementHTML(a){return `<article class="info glass"><small>${esc(a.level)} · ${esc(a.date)}</small><p style="font-weight:900;font-size:18px;margin-bottom:7px">${esc(a.title)}</p><p style="color:var(--muted)">${esc(a.body)}</p></article>`}
+function renderIncidentsAndLogs(){
+  document.getElementById("logList").innerHTML=data.logs.map(l=>rowHTML(l.icon,l.title,l.detail,l.color)).join("");
+}
+function renderAccess(){
+  document.getElementById("visitorsList").innerHTML=data.visitors.map(v=>rowHTML(v.icon,v.name,`${v.detail} · ${v.time} · ${v.status}`,v.color)).join("");
+  document.getElementById("cameraGrid").innerHTML=cameras.map(cam=>`<button class="module glass" onclick="openCamera('${cam.id}')"><div class="moduleTop"><div class="moduleIcon" style="background:linear-gradient(135deg,${c(cam.color)},rgba(0,0,0,.28));">${cam.icon}</div><span class="tag" style="${tint(cam.color)}">${esc(cam.ip)}</span></div><h3>${esc(cam.name)}</h3><p>${esc(cam.location)}</p><div class="moduleFoot"><span>IP local</span><span style="color:${c(cam.color)}">›</span></div></button>`).join("");
+}
+function rowHTML(icon,title,detail,color,id="",kind=""){
+  const action=id?`onclick="open${kind}('${id}')"`:"";
+  return `<button class="row glass" ${action}>${cardIcon(icon,color)}<div class="rowContent"><h3>${esc(title)}</h3><p>${esc(detail)}</p></div></button>`;
+}
+function renderProfile(){
+  const r=data.residents.find(x=>x.id===data.activeResidentId)||data.residents[0];
+  document.getElementById("profileCard").innerHTML=`<div class="profileIcon">🏠</div><h1>${esc(r.house)}</h1><p>${esc(r.name)} · ${esc(r.type)}</p><span class="login">Sesión iniciada</span>`;
+  const owners=data.residents.filter(x=>x.type==="Dueño").length;
+  const tenants=data.residents.filter(x=>x.type==="Inquilino").length;
+  document.getElementById("registryCounters").innerHTML=[
+    {t:"Dueños",v:owners,i:"🏠",c:"blue"},
+    {t:"Inquilinos",v:tenants,i:"●",c:"teal"},
+    {t:"Controles",v:14,i:"🔑",c:"indigo"},
+    {t:"Multas",v:3,i:"📄",c:"red"}
+  ].map(o=>`<article class="op glass"><i style="color:${c(o.c)}">${o.i}</i><b>${o.v}</b><span>${o.t}</span></article>`).join("");
+  document.getElementById("registryRows").innerHTML=[
+    rowHTML("🏠","Bitácora de residentes",`${owners} dueños · ${tenants} inquilinos · tiempo de residencia registrado`,"blue",r.id,"Resident"),
+    rowHTML("🔑","Controles del portón","14 controles registrados · asignados por casa","indigo","gate","Gate"),
+    rowHTML("📄","Registro de multas","3 multas registradas · seguimiento administrativo","red","fine","Fine")
+  ].join("");
+}
+function renderAll(){fillSelects();renderFocus();renderMetrics();renderOps();renderAnnouncements();renderIncidentsAndLogs();renderAccess();renderProfile()}
+
+function modalHero(icon,title,subtitle,color){return `<div class="heroModal" style="background:linear-gradient(135deg,${c(color)},rgba(255,255,255,.16));"><div><div class="big">${icon}</div><h2>${esc(title)}</h2><p>${esc(subtitle)}</p></div></div>`}
+function info(title,value,color){return `<div class="info glass"><small>${esc(title)}</small><p>${esc(value)}</p></div>`}
+function actions(list,color){return `<div class="actions">${list.map(x=>`<div class="action"><span style="color:${c(color)}">✓</span> ${esc(x)}</div>`).join("")}</div>`}
+function openModal(html){document.getElementById("modalContent").innerHTML=html;document.getElementById("modalWrap").classList.add("active")}
+function closeModal(){document.getElementById("modalWrap").classList.remove("active");document.getElementById("modalContent").innerHTML=""}
+document.getElementById("modalWrap").onclick=e=>{if(e.target.id==="modalWrap")closeModal()};
+
+function openFocus(id){const x=focusItems.find(o=>o.id===id);openModal(modalHero(x.icon,x.title,x.subtitle,x.color)+info("Resumen",x.detail,x.color)+actions(x.actions,x.color))}
+function openOperation(id){const x=operations.find(o=>o.id===id);openModal(modalHero(x.icon,x.title,"Operación diaria",x.color)+info("Registro actual",x.value,x.color)+info("Descripción",x.detail,x.color)+actions(x.actions,x.color))}
+function openModule(id){const x=modules.find(o=>o.id===id);openModal(modalHero(x.icon,x.title,x.status,x.color)+info("Descripción",x.description,x.color)+info("Resumen",x.summary,x.color)+actions(x.features,x.color))}
+function openResident(id){const r=data.residents.find(o=>o.id===id)||data.residents[0];openModal(modalHero("🏠",r.house,r.type,r.color)+info("Responsable",r.name,r.color)+info("Tiempo viviendo",r.livingTime,r.color)+info("Personas",r.peopleCount,r.color)+info("Estado",r.status,r.color)+info("Observaciones",r.notes,r.color))}
+function openGate(){openModal(modalHero("🔑","Controles del portón","Registro operativo","indigo")+info("Uso","Alta, baja, extravío, duplicado y casa asignada.","indigo")+actions(["Registrar control nuevo.","Dar de baja por extravío.","Asignar a casa.","Verificar funcionamiento."],"indigo"))}
+function openFine(){openModal(modalHero("📄","Registro de multas","Historial administrativo","red")+info("Uso","Documenta motivo, evidencia, monto, casa y estado de pago.","red")+actions(["Registrar multa.","Adjuntar evidencia.","Marcar como pagada.","Consultar historial."],"red"))}
+function openCamera(id){const cam=cameras.find(x=>x.id===id);openModal(modalHero(cam.icon,cam.name,"IP local",cam.color)+info("Ubicación",cam.location,cam.color)+info("IP",cam.ip,cam.color)+info("Nota","El celular debe estar en la misma red local. GitHub Pages usa HTTPS y algunas cámaras HTTP no se incrustan; abrir en pestaña suele funcionar mejor.",cam.color)+`<button class="primary" onclick="window.open('${cam.url}','_blank')">Abrir cámara</button>`)}
+function openQRGenerated(payload,service,house,minutes){const url=`https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(payload)}`;openModal(modalHero("▦",service,house,"black")+`<div class="qrBox"><img src="${url}" alt="QR"></div>`+info("Validez",minutes+" minutos","black")+info("Instrucción","El proveedor escanea el QR en el acceso. La casa sale a recibir o atender el servicio.","black"))}
+
+function setActiveHouse(id){data.activeResidentId=id;save();renderAll();toast("Perfil actualizado")}
+function addIncident(){
+  const type=document.getElementById("incidentType").value;
+  const houseId=document.getElementById("incidentHouse").value;
+  const house=(data.residents.find(r=>r.id===houseId)||{}).house||"Casa";
+  const detail=document.getElementById("incidentDetail").value.trim()||"Reporte registrado desde operación móvil.";
+  data.incidents.unshift({id:"inc"+Date.now(),title:type,detail:`${house}: ${detail}`,priority:"Media",date:"Hoy",icon:"⚠️",color:"red"});
+  addLog("Incidencia registrada",`${type} · ${house}`,"⚠️","red");
+  document.getElementById("incidentDetail").value="";
+  toast("Incidencia registrada");
+}
+function generateQR(){
+  const r=data.residents.find(x=>x.id===document.getElementById("qrHouse").value)||data.residents[0];
+  const service=document.getElementById("qrService").value;
+  const minutes=document.getElementById("qrMinutes").value;
+  const code=`VT3-${r.house.replace(/\s/g,"")}-${Date.now().toString().slice(-5)}`;
+  const payload=`VILLAS TERRA III\nDESTINO: ${r.house}\nSERVICIO: ${service}\nCODIGO: ${code}\nVALIDEZ: ${minutes} minutos`;
+  data.visitors.unshift({id:"vis"+Date.now(),name:service,detail:`Servicio para ${r.house} con QR temporal`,time:now(),status:"QR",icon:"▦",color:"black"});
+  addLog("QR generado",`${service} para ${r.house}`,"▦","black");
+  openQRGenerated(payload,service,r.house,minutes);
+  toast("QR generado");
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="villas-terra-iii-datos.json";a.click();URL.revokeObjectURL(a.href);
+}
+function resetDemo(){localStorage.removeItem(STORAGE_KEY);data=structuredClone(seed);renderAll();toast("Demo reiniciado")}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200)}
+
+initTabs();
+renderAll();
+</script>
+</body>
+</html>
