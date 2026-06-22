@@ -1,1 +1,1566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#05070b" />
+  <title>Villas Terra III</title>
 
+  <style>
+    :root {
+      --bg: #05070b;
+      --card: rgba(255, 255, 255, 0.12);
+      --card-strong: rgba(255, 255, 255, 0.18);
+      --stroke: rgba(255, 255, 255, 0.22);
+      --text: #ffffff;
+      --muted: rgba(255, 255, 255, 0.62);
+      --muted-2: rgba(255, 255, 255, 0.42);
+      --blue: #1da1ff;
+      --cyan: #3ddcff;
+      --red: #ff4545;
+      --orange: #ff9f2e;
+      --green: #35dc78;
+      --mint: #3df2d0;
+      --purple: #bf4cff;
+      --pink: #ff3f7e;
+      --yellow: #ffd60a;
+      --indigo: #6f7cff;
+      --brown: #c28b5f;
+      --teal: #19d2d2;
+      --radius-xl: 34px;
+      --radius-lg: 26px;
+      --radius-md: 20px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --tab-height: 92px;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 0% 0%, rgba(29, 161, 255, 0.18), transparent 30%),
+        radial-gradient(circle at 100% 28%, rgba(255, 69, 69, 0.14), transparent 32%),
+        radial-gradient(circle at 10% 100%, rgba(61, 242, 208, 0.10), transparent 28%),
+        var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Arial, sans-serif;
+      overflow-x: hidden;
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+
+    .app {
+      min-height: 100vh;
+      padding-bottom: calc(var(--tab-height) + var(--safe-bottom));
+    }
+
+    .screen {
+      display: none;
+      padding: 14px 20px 34px;
+      animation: fadeIn 220ms ease;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .nav-title {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding: 12px 0 14px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 800;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .hero {
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(42px, 12vw, 64px);
+      line-height: 0.95;
+      letter-spacing: -2.4px;
+      font-weight: 900;
+    }
+
+    .hero p {
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: clamp(24px, 7vw, 36px);
+      line-height: 1.2;
+      font-weight: 500;
+    }
+
+    .glass {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.07));
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius-lg);
+      box-shadow:
+        0 16px 42px rgba(0,0,0,0.22),
+        inset 0 1px 0 rgba(255,255,255,0.20);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+    }
+
+    .glass::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(255,255,255,0.20), transparent 26%),
+        linear-gradient(135deg, rgba(255,255,255,0.06), transparent 55%);
+      pointer-events: none;
+    }
+
+    .section {
+      margin-top: 24px;
+    }
+
+    .section-head {
+      margin-bottom: 14px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.05;
+      letter-spacing: -0.8px;
+      font-weight: 900;
+    }
+
+    .section-head p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.28;
+    }
+
+    .chips {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 4px 2px 6px;
+      scrollbar-width: none;
+    }
+
+    .chips::-webkit-scrollbar,
+    .horizontal::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 18px;
+      transform: translateX(-3px);
+      transition: transform 500ms ease, background 220ms ease;
+    }
+
+    .chip:nth-child(2) { transform: translateX(3px); }
+    .chip:nth-child(3) { transform: translateX(-1px); }
+
+    .chip:hover,
+    .chip:active {
+      transform: scale(0.96);
+    }
+
+    .chip.blue { color: var(--blue); background: rgba(29,161,255,0.13); }
+    .chip.cyan { color: var(--cyan); background: rgba(61,220,255,0.13); }
+    .chip.red { color: var(--red); background: rgba(255,69,69,0.13); }
+
+    .horizontal {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 2px 2px 4px;
+      scrollbar-width: none;
+    }
+
+    .op-card {
+      flex: 0 0 88px;
+      height: 104px;
+      padding: 10px 8px;
+      text-align: center;
+      transition: transform 180ms ease, opacity 180ms ease;
+    }
+
+    .op-card:active {
+      transform: scale(0.94);
+      opacity: 0.82;
+    }
+
+    .op-icon {
+      font-size: 24px;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .op-value {
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 7px;
+    }
+
+    .op-title {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .metric-grid,
+    .module-grid,
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .metric {
+      min-height: 148px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .circle-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .metric-value {
+      margin-top: 14px;
+      font-size: 34px;
+      font-weight: 950;
+      letter-spacing: -1px;
+    }
+
+    .metric-title {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.15;
+      font-weight: 600;
+    }
+
+    .module {
+      min-height: 220px;
+      padding: 16px;
+      transition: transform 180ms ease, opacity 180ms ease;
+    }
+
+    .module:active {
+      transform: scale(0.96);
+      opacity: 0.85;
+    }
+
+    .module-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .module-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 21px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 26px;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+    }
+
+    .module-metric {
+      text-align: right;
+      font-weight: 900;
+      font-size: 16px;
+    }
+
+    .status {
+      display: inline-flex;
+      margin-top: 6px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .module h3 {
+      margin: 16px 0 8px;
+      font-size: 19px;
+      line-height: 1.1;
+    }
+
+    .module p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.32;
+    }
+
+    .ai-hint {
+      margin-top: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .card-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .row {
+      width: 100%;
+      padding: 16px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      text-align: left;
+      transition: transform 180ms ease, opacity 180ms ease;
+    }
+
+    .row:active {
+      transform: scale(0.98);
+      opacity: 0.84;
+    }
+
+    .row h3 {
+      margin: 0;
+      font-size: 19px;
+      line-height: 1.18;
+    }
+
+    .row p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.32;
+    }
+
+    .row small {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted-2);
+      font-weight: 700;
+    }
+
+    .row-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .profile-card {
+      padding: 24px;
+      text-align: center;
+    }
+
+    .profile-house-icon {
+      width: 104px;
+      height: 104px;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 48px;
+      background: rgba(29,161,255,0.14);
+      color: var(--blue);
+    }
+
+    .profile-card h1 {
+      margin: 0;
+      font-size: 38px;
+      letter-spacing: -1px;
+    }
+
+    .profile-card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .login-pill {
+      display: inline-flex;
+      margin-top: 12px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(53, 220, 120, 0.14);
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .tabbar {
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: calc(10px + var(--safe-bottom));
+      z-index: 100;
+      height: 78px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 2px;
+      padding: 8px;
+      border-radius: 38px;
+      background: rgba(35, 37, 38, 0.74);
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow: 0 20px 44px rgba(0,0,0,0.38);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+    }
+
+    .tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 30px;
+      gap: 4px;
+      color: rgba(255,255,255,0.88);
+      transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+    }
+
+    .tab.active {
+      background: rgba(255,255,255,0.12);
+      color: var(--blue);
+    }
+
+    .tab:active {
+      transform: scale(0.94);
+    }
+
+    .tab-icon {
+      font-size: 25px;
+      line-height: 1;
+    }
+
+    .tab-label {
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: none;
+      align-items: flex-end;
+      background: rgba(0,0,0,0.52);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal {
+      width: 100%;
+      max-height: 88vh;
+      overflow-y: auto;
+      padding: 20px 20px calc(22px + var(--safe-bottom));
+      border-radius: 34px 34px 0 0;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(255,255,255,0.18), transparent 28%),
+        rgba(18, 20, 24, 0.94);
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow: 0 -24px 60px rgba(0,0,0,0.42);
+    }
+
+    .modal-handle {
+      width: 48px;
+      height: 5px;
+      border-radius: 999px;
+      margin: 0 auto 18px;
+      background: rgba(255,255,255,0.25);
+    }
+
+    .modal-hero {
+      min-height: 184px;
+      padding: 22px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      border-radius: 32px;
+      margin-bottom: 18px;
+    }
+
+    .modal-hero-icon {
+      font-size: 68px;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .modal-hero h2 {
+      margin: 0;
+      font-size: 27px;
+      line-height: 1.05;
+      letter-spacing: -0.5px;
+    }
+
+    .modal-hero p {
+      display: inline-flex;
+      margin: 10px 0 0;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.18);
+      color: rgba(255,255,255,0.86);
+      font-weight: 900;
+      font-size: 12px;
+    }
+
+    .info-card {
+      padding: 16px;
+      margin-top: 12px;
+    }
+
+    .info-card small {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      margin-bottom: 7px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .info-card p {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .action-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .action-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 13px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.10);
+      font-size: 15px;
+      line-height: 1.3;
+    }
+
+    .primary-btn {
+      width: 100%;
+      margin-top: 16px;
+      padding: 15px 18px;
+      border-radius: 18px;
+      background: var(--blue);
+      color: #fff;
+      font-weight: 900;
+      font-size: 16px;
+    }
+
+    .qr-box {
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      margin: 16px auto;
+      width: 246px;
+      height: 246px;
+      border-radius: 28px;
+      background: #fff;
+      box-shadow: 0 18px 42px rgba(0,0,0,0.28);
+    }
+
+    .qr-box img {
+      width: 210px;
+      height: 210px;
+      image-rendering: pixelated;
+    }
+
+    iframe {
+      width: 100%;
+      height: 320px;
+      border: none;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.06);
+      margin-top: 14px;
+    }
+
+    .color-blue { color: var(--blue); }
+    .color-cyan { color: var(--cyan); }
+    .color-red { color: var(--red); }
+    .color-orange { color: var(--orange); }
+    .color-green { color: var(--green); }
+    .color-mint { color: var(--mint); }
+    .color-purple { color: var(--purple); }
+    .color-pink { color: var(--pink); }
+    .color-yellow { color: var(--yellow); }
+    .color-indigo { color: var(--indigo); }
+    .color-brown { color: var(--brown); }
+    .color-teal { color: var(--teal); }
+
+    @media (min-width: 720px) {
+      .screen {
+        max-width: 540px;
+        margin: 0 auto;
+      }
+
+      .tabbar {
+        max-width: 540px;
+        margin: 0 auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <section id="inicio" class="screen active">
+      <div class="nav-title">Inicio</div>
+
+      <header class="hero">
+        <h1>Villas Terra III</h1>
+        <p>Panel interactivo de administración</p>
+      </header>
+
+      <div class="chips" id="focusChips"></div>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Operación diaria</h2>
+          <p>Accesos rápidos sin bajar por toda la app</p>
+        </div>
+        <div class="horizontal" id="operationStrip"></div>
+      </section>
+
+      <section class="section">
+        <div class="metric-grid" id="metricsGrid"></div>
+      </section>
+
+      <section class="section" id="compactAnnouncement"></section>
+
+      <section class="section">
+        <div class="info-card glass">
+          <small>Distribución inteligente</small>
+          <p>Los módulos completos se organizaron en Comunicados, Incidencias, Visitantes y Perfil para reducir el scroll del inicio.</p>
+        </div>
+      </section>
+    </section>
+
+    <section id="comunicados" class="screen">
+      <div class="nav-title">Comunicados</div>
+      <div class="section-head">
+        <h2>Comunicados</h2>
+        <p>Avisos oficiales, agua, Protección Civil y reglas de convivencia.</p>
+      </div>
+
+      <div class="card-list" id="announcementsList"></div>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Módulos relacionados</h2>
+          <p>Información oficial y preventiva</p>
+        </div>
+        <div class="module-grid" id="communicationModules"></div>
+      </section>
+    </section>
+
+    <section id="incidencias" class="screen">
+      <div class="nav-title">Incidencias</div>
+      <div class="section-head">
+        <h2>Incidencias</h2>
+        <p>Reportes de seguridad, limpieza, multas, portón, lámparas y convivencia.</p>
+      </div>
+
+      <div class="card-list" id="incidentsList"></div>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Flujos de seguimiento</h2>
+          <p>Abre el módulo que corresponde al reporte</p>
+        </div>
+        <div class="module-grid" id="incidentModules"></div>
+      </section>
+    </section>
+
+    <section id="visitantes" class="screen">
+      <div class="nav-title">Visitantes</div>
+      <div class="section-head">
+        <h2>Visitantes</h2>
+        <p>Entradas, QR temporales, proveedores, servicios externos y CCTV.</p>
+      </div>
+
+      <div class="card-list" id="visitorsList"></div>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>QR para entregas y servicios</h2>
+          <p>Comida, gas, albañil, internet, paquetería o proveedor externo</p>
+        </div>
+        <div class="module-grid" id="qrGrid"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Video vigilancia</h2>
+          <p>6 cámaras por IP local en la red interna</p>
+        </div>
+        <div class="module-grid" id="cameraGrid"></div>
+      </section>
+    </section>
+
+    <section id="perfil" class="screen">
+      <div class="nav-title">Perfil</div>
+
+      <div class="profile-card glass" id="profileCard"></div>
+
+      <section class="section">
+        <div class="mini-grid" id="profileInfo"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Registro residencial</h2>
+          <p>Dueños, inquilinos, controles de portón y multas</p>
+        </div>
+        <div class="mini-grid" id="registryCounters"></div>
+        <div class="card-list" id="registryRows" style="margin-top: 14px;"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Bitácora operativa</h2>
+          <p>Últimos movimientos de la privada</p>
+        </div>
+        <div class="card-list" id="activityLog"></div>
+      </section>
+    </section>
+  </main>
+
+  <nav class="tabbar">
+    <button class="tab active" data-tab="inicio">
+      <span class="tab-icon">⌂</span>
+      <span class="tab-label">Inicio</span>
+    </button>
+    <button class="tab" data-tab="comunicados">
+      <span class="tab-icon">◖</span>
+      <span class="tab-label">Comunicados</span>
+    </button>
+    <button class="tab" data-tab="incidencias">
+      <span class="tab-icon">!</span>
+      <span class="tab-label">Incidencias</span>
+    </button>
+    <button class="tab" data-tab="visitantes">
+      <span class="tab-icon">●●</span>
+      <span class="tab-label">Visitantes</span>
+    </button>
+    <button class="tab" data-tab="perfil">
+      <span class="tab-icon">◉</span>
+      <span class="tab-label">Perfil</span>
+    </button>
+  </nav>
+
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal" id="modal">
+      <div class="modal-handle"></div>
+      <div id="modalContent"></div>
+      <button class="primary-btn" onclick="closeModal()">Cerrar</button>
+    </div>
+  </div>
+
+  <script>
+    const colors = {
+      blue: "#1da1ff",
+      cyan: "#3ddcff",
+      red: "#ff4545",
+      orange: "#ff9f2e",
+      green: "#35dc78",
+      mint: "#3df2d0",
+      purple: "#bf4cff",
+      pink: "#ff3f7e",
+      yellow: "#ffd60a",
+      indigo: "#6f7cff",
+      brown: "#c28b5f",
+      teal: "#19d2d2",
+      black: "#111111"
+    };
+
+    const state = {
+      waterLevel: 72,
+      pendingFee: 850,
+      openIncidents: 3,
+      visitorsToday: 2,
+      activeResidentId: "casa01"
+    };
+
+    const focusItems = [
+      {
+        id: "agua",
+        title: "Agua",
+        subtitle: "Control hídrico",
+        icon: "💧",
+        color: "blue",
+        detail: "Acceso rápido al estado de cisterna, bombas, fugas, consumo y alertas preventivas.",
+        actions: [
+          "Consultar nivel de cisterna.",
+          "Reportar fuga o desperdicio.",
+          "Revisar estado de bombas.",
+          "Generar aviso preventivo."
+        ]
+      },
+      {
+        id: "cctv",
+        title: "CCTV",
+        subtitle: "Video vigilancia local",
+        icon: "🎥",
+        color: "cyan",
+        detail: "Acceso a las 6 cámaras IP de la privada dentro de la red local.",
+        actions: [
+          "Abrir cámara por IP local.",
+          "Registrar verificación visual.",
+          "Consultar ubicación.",
+          "Preparar integración con DVR/NVR."
+        ]
+      },
+      {
+        id: "seguridad",
+        title: "Seguridad",
+        subtitle: "Portón, QR, multas y convivencia",
+        icon: "🛡️",
+        color: "red",
+        detail: "Agrupa controles del portón, QR de servicios, rondines, peatones, mascotas, multas y Protección Civil.",
+        actions: [
+          "Registrar control de portón.",
+          "Generar QR para servicio o comida.",
+          "Registrar multa.",
+          "Reportar evento de seguridad."
+        ]
+      }
+    ];
+
+    const operations = [
+      { id: "guardia", title: "Guardia", value: "6", icon: "🪪", color: "brown", detail: "Registros del guardia, novedades de turno, proveedores, paquetería y observaciones del acceso.", actions: ["Registrar entrada y salida de turno.", "Agregar novedad del acceso.", "Documentar proveedor o paquetería.", "Escalar observación de seguridad."] },
+      { id: "limpieza", title: "Limpieza", value: "4", icon: "✨", color: "mint", detail: "Control de áreas comunes limpias, zonas sucias, contenedores, pasillos, jardín y evidencias.", actions: ["Marcar área limpia.", "Reportar zona sucia.", "Asignar seguimiento.", "Guardar evidencia visual."] },
+      { id: "rondin", title: "Rondín", value: "2", icon: "🌙", color: "purple", detail: "Recorridos nocturnos por acceso, pasillos, estacionamiento, cámaras, portón y zonas sensibles.", actions: ["Completar rondín nocturno.", "Registrar zona sin novedad.", "Reportar hallazgo crítico.", "Cruzar evento con CCTV."] },
+      { id: "cctv", title: "CCTV", value: "6", icon: "🎥", color: "cyan", detail: "Revisión de cámaras por IP local, ubicación, estado de conexión y verificación visual.", actions: ["Abrir cámara local.", "Verificar señal.", "Registrar revisión.", "Revisar IP y ubicación."] },
+      { id: "lamparas", title: "Lámparas", value: "1", icon: "💡", color: "yellow", detail: "Reportes de luminarias apagadas, intermitentes o dañadas en áreas comunes.", actions: ["Reportar lámpara apagada.", "Ubicar zona afectada.", "Asignar prioridad.", "Cerrar reparación."] },
+      { id: "mascotas", title: "Mascotas", value: "1", icon: "🐾", color: "pink", detail: "Convivencia con mascotas: correa, heces, ruido, agresión o animales sin supervisión.", actions: ["Reportar mascota sin correa.", "Reportar heces sin recoger.", "Registrar ruido o agresión.", "Enviar aviso preventivo."] },
+      { id: "peaton", title: "Peatón", value: "1", icon: "🚶", color: "teal", detail: "Respeto al paso peatonal, rampas, accesos, banquetas y libre tránsito dentro de la privada.", actions: ["Reportar obstrucción.", "Registrar zona de riesgo.", "Notificar a administración.", "Cerrar seguimiento."] },
+      { id: "pcivil", title: "P. Civil", value: "2", icon: "⛑️", color: "red", detail: "Simulacros, rutas de evacuación, extintores, botiquín, señalización y punto de reunión.", actions: ["Registrar simulacro.", "Revisar extintor.", "Verificar botiquín.", "Actualizar ruta de evacuación."] },
+      { id: "porton", title: "Portón", value: "14", icon: "🔑", color: "indigo", detail: "Registro de controles del portón: activos, pendientes, duplicados, extraviados y asignados por casa.", actions: ["Registrar control nuevo.", "Dar de baja control perdido.", "Asignar control a casa.", "Verificar funcionamiento."] },
+      { id: "multas", title: "Multas", value: "3", icon: "📄", color: "red", detail: "Historial de multas por convivencia, mascotas, limpieza, ruido, accesos, reglamento y evidencia.", actions: ["Registrar multa.", "Agregar evidencia.", "Marcar como pagada.", "Consultar historial."] },
+      { id: "qr", title: "QR", value: "4", icon: "▦", color: "black", detail: "QR temporal para comida, gas, albañil, técnico de internet, paquetería o servicio externo.", actions: ["Generar QR por casa.", "Definir tiempo de validez.", "Registrar tipo de servicio.", "Enviar instrucción al proveedor."] }
+    ];
+
+    const modules = [
+      {
+        id: "agua",
+        shortTitle: "Agua",
+        title: "Control hídrico IoT",
+        description: "Monitoreo de cisternas, bombas, ciclos de operación y autonomía estimada.",
+        summary: "Supervisa nivel de agua, estado de bombas y riesgo de desabasto.",
+        metric: "72%",
+        status: "Estable",
+        aiHint: "Predicción hídrica",
+        icon: "💧",
+        color: "blue",
+        features: ["Lectura de nivel de cisterna.", "Estado operativo de bombas.", "Autonomía estimada por consumo.", "Reportes de fugas o desperdicio."]
+      },
+      {
+        id: "cctv",
+        shortTitle: "CCTV",
+        title: "Video vigilancia CCTV",
+        description: "Consulta de 6 cámaras por IP local dentro de la red privada.",
+        summary: "Integra cámaras existentes sin internet mediante IP local.",
+        metric: "6",
+        status: "Local",
+        aiHint: "Monitoreo visual",
+        icon: "🎥",
+        color: "cyan",
+        features: ["IP local por cámara.", "Vista web si el DVR/NVR lo permite.", "Apertura externa por navegador.", "Base para RTSP/HLS."]
+      },
+      {
+        id: "porton",
+        shortTitle: "Portón",
+        title: "Controles del portón",
+        description: "Registro de controles asignados, activos, extraviados, duplicados y dados de baja.",
+        summary: "Permite saber qué control pertenece a cada casa, quién lo usa y cuándo fue revisado.",
+        metric: "14",
+        status: "Activos",
+        aiHint: "Control de acceso",
+        icon: "🔑",
+        color: "indigo",
+        features: ["Alta de control nuevo.", "Baja por extravío.", "Casa y responsable asignado.", "Historial de revisiones."]
+      },
+      {
+        id: "residentes",
+        shortTitle: "Residentes",
+        title: "Dueños e inquilinos",
+        description: "Bitácora de casas, propietarios, inquilinos, tiempo de vivir y número de personas.",
+        summary: "Ordena quién vive en cada casa, si es dueño o inquilino, antigüedad y estado administrativo.",
+        metric: "12",
+        status: "Censo",
+        aiHint: "Registro vecinal",
+        icon: "🏠",
+        color: "blue",
+        features: ["Dueños registrados.", "Inquilinos registrados.", "Tiempo de vivir.", "Personas por casa."]
+      },
+      {
+        id: "qr",
+        shortTitle: "QR",
+        title: "QR para entregas y servicios",
+        description: "Código temporal para comida, gas, albañil, internet, paquetería y servicios externos.",
+        summary: "El QR dirige al proveedor hacia la casa correcta y permite que el residente salga a recibir o atender.",
+        metric: "4",
+        status: "Temporal",
+        aiHint: "Acceso QR",
+        icon: "▦",
+        color: "black",
+        features: ["QR por casa.", "Tipo de servicio.", "Código temporal.", "Instrucción al proveedor."]
+      },
+      {
+        id: "multas",
+        shortTitle: "Multas",
+        title: "Registro de multas",
+        description: "Historial de sanciones por convivencia, mascotas, limpieza, ruido, portón o reglamento.",
+        summary: "Permite documentar multas, motivo, evidencia, monto, casa y estado de pago.",
+        metric: "3",
+        status: "Pendiente",
+        aiHint: "Historial",
+        icon: "📄",
+        color: "red",
+        features: ["Concepto de multa.", "Casa responsable.", "Monto y fecha.", "Estado de pago."]
+      },
+      {
+        id: "seguridad",
+        shortTitle: "Seguridad",
+        title: "Seguridad y convivencia",
+        description: "Rondines, peatones, mascotas, cámaras, guardia y reportes preventivos.",
+        summary: "Concentra eventos de seguridad, convivencia vecinal y cumplimiento de reglas internas.",
+        metric: "Activo",
+        status: "Rojo",
+        aiHint: "Supervisión",
+        icon: "🛡️",
+        color: "red",
+        features: ["Rondín nocturno.", "Reporte de peatones y accesos obstruidos.", "Reporte de mascotas.", "Alertas de lámparas y zonas sucias."]
+      },
+      {
+        id: "pcivil",
+        shortTitle: "P. Civil",
+        title: "Protección Civil",
+        description: "Simulacros, extintores, botiquín, rutas de evacuación y puntos de reunión.",
+        summary: "Permite registrar simulacros, revisar equipo básico y documentar protocolos de emergencia.",
+        metric: "2",
+        status: "Revisión",
+        aiHint: "Prevención",
+        icon: "⛑️",
+        color: "red",
+        features: ["Registro de simulacros.", "Revisión de extintores.", "Botiquín y señalización.", "Rutas de evacuación y punto de reunión."]
+      },
+      {
+        id: "limpieza",
+        shortTitle: "Limpieza",
+        title: "Áreas comunes limpias",
+        description: "Verificación de pasillos, contenedores, accesos, jardines y áreas comunes.",
+        summary: "Permite marcar zonas limpias, detectar áreas sucias y mantener evidencia de limpieza.",
+        metric: "4",
+        status: "Verificado",
+        aiHint: "Checklist limpio",
+        icon: "✨",
+        color: "mint",
+        features: ["Checklist de áreas.", "Zonas con residuos.", "Evidencia por fecha.", "Seguimiento de proveedor."]
+      }
+    ];
+
+    const cameras = [
+      { id: "cam01", name: "Cámara 01", location: "Acceso principal", ipAddress: "192.168.1.101", webURL: "http://192.168.1.101", rtspURL: "rtsp://192.168.1.101:554/stream1", summary: "Monitoreo del acceso principal, visitantes y proveedores.", icon: "🎥", color: "cyan" },
+      { id: "cam02", name: "Cámara 02", location: "Portón vehicular", ipAddress: "192.168.1.102", webURL: "http://192.168.1.102", rtspURL: "rtsp://192.168.1.102:554/stream1", summary: "Vista del portón y entradas vehiculares.", icon: "🚗", color: "indigo" },
+      { id: "cam03", name: "Cámara 03", location: "Estacionamiento", ipAddress: "192.168.1.103", webURL: "http://192.168.1.103", rtspURL: "rtsp://192.168.1.103:554/stream1", summary: "Supervisión de vehículos y circulación.", icon: "🅿️", color: "blue" },
+      { id: "cam04", name: "Cámara 04", location: "Área común", ipAddress: "192.168.1.104", webURL: "http://192.168.1.104", rtspURL: "rtsp://192.168.1.104:554/stream1", summary: "Vista de convivencia, limpieza y mascotas.", icon: "🌳", color: "green" },
+      { id: "cam05", name: "Cámara 05", location: "Pasillo interior", ipAddress: "192.168.1.105", webURL: "http://192.168.1.105", rtspURL: "rtsp://192.168.1.105:554/stream1", summary: "Control de tránsito peatonal y rondines.", icon: "🚶", color: "purple" },
+      { id: "cam06", name: "Cámara 06", location: "Perímetro", ipAddress: "192.168.1.106", webURL: "http://192.168.1.106", rtspURL: "rtsp://192.168.1.106:554/stream1", summary: "Cobertura de zona posterior y barda perimetral.", icon: "🛡️", color: "orange" }
+    ];
+
+    const qrAccesses = [
+      { id: "qr01", house: "Casa 01", serviceType: "Comida", instruction: "Anunciarse en portón. La Casa 01 saldrá a recibir el pedido.", validity: "30 minutos", code: "VT3-QR-0101", icon: "🥡", color: "orange" },
+      { id: "qr03", house: "Casa 03", serviceType: "Gas", instruction: "Esperar autorización del residente antes de ingresar a zona de servicio.", validity: "45 minutos", code: "VT3-QR-0302", icon: "🔥", color: "red" },
+      { id: "qr05", house: "Casa 05", serviceType: "Técnico internet", instruction: "Registrar identificación en acceso y dirigirse únicamente a Casa 05.", validity: "60 minutos", code: "VT3-QR-0503", icon: "📶", color: "blue" },
+      { id: "qr08", house: "Casa 08", serviceType: "Albañil", instruction: "Acceso sujeto a confirmación del residente. Registrar herramienta y salida.", validity: "120 minutos", code: "VT3-QR-0804", icon: "🔨", color: "brown" }
+    ];
+
+    const residents = [
+      { id: "casa01", house: "Casa 01", name: "Familia Ponce", type: "Dueño", livingTime: "8 años", peopleCount: 4, status: "Al corriente", notes: "Propietario residente. Sin adeudos activos.", color: "blue" },
+      { id: "casa02", house: "Casa 02", name: "Familia López", type: "Inquilino", livingTime: "1 año 4 meses", peopleCount: 3, status: "Cuota pendiente", notes: "Contrato vigente. Se recomienda actualizar datos de contacto.", color: "teal" },
+      { id: "casa03", house: "Casa 03", name: "Familia García", type: "Dueño", livingTime: "5 años", peopleCount: 2, status: "Al corriente", notes: "Cuenta con dos controles de portón registrados.", color: "blue" },
+      { id: "casa04", house: "Casa 04", name: "Familia Hernández", type: "Inquilino", livingTime: "8 meses", peopleCount: 2, status: "Revisión", notes: "Pendiente actualización de placas vehiculares.", color: "teal" }
+    ];
+
+    const gateControls = [
+      { id: "ctrl001", code: "CTRL-001", house: "Casa 01", responsible: "Familia Ponce", type: "Control principal", status: "Activo", lastCheck: "21 junio 2026", notes: "Funciona correctamente. Batería revisada.", color: "indigo" },
+      { id: "ctrl002", code: "CTRL-002", house: "Casa 02", responsible: "Familia López", type: "Control secundario", status: "Activo", lastCheck: "18 junio 2026", notes: "Asignado a inquilino. Revisión sin novedad.", color: "indigo" },
+      { id: "ctrl003", code: "CTRL-003", house: "Casa 03", responsible: "Familia García", type: "Duplicado", status: "Activo", lastCheck: "15 junio 2026", notes: "Duplicado autorizado por administración.", color: "indigo" },
+      { id: "ctrl004", code: "CTRL-004", house: "Casa 04", responsible: "Familia Hernández", type: "Control principal", status: "Pendiente", lastCheck: "10 junio 2026", notes: "Pendiente confirmar funcionamiento de apertura.", color: "orange" }
+    ];
+
+    const fines = [
+      { id: "fine01", house: "Casa 02", concept: "Basura fuera de horario", amount: "$300", date: "12 junio 2026", reason: "Residuos colocados fuera del horario permitido en área común.", evidence: "Fotografía de contenedores y reporte de guardia.", status: "Pendiente", color: "red" },
+      { id: "fine02", house: "Casa 04", concept: "Mascota sin correa", amount: "$250", date: "15 junio 2026", reason: "Mascota en área común sin supervisión y sin correa.", evidence: "Reporte vecinal y bitácora del guardia.", status: "Pendiente", color: "pink" },
+      { id: "fine03", house: "Casa 03", concept: "Ruido nocturno", amount: "$400", date: "18 junio 2026", reason: "Música después del horario de descanso.", evidence: "Reporte de incidencia y confirmación de rondín.", status: "Pagada", color: "green" }
+    ];
+
+    const announcements = [
+      { id: "ann01", title: "Mantenimiento de bombas de agua", body: "El próximo sábado se realizará revisión preventiva de bombas, válvulas y sistema de llenado de cisterna.", level: "Importante", date: "28 mayo 2026", color: "orange" },
+      { id: "ann02", title: "QR para entregas y servicios", body: "La app permitirá generar QR temporales para comida, gas, albañiles, técnicos de internet, paquetería y proveedores externos.", level: "Nuevo", date: "21 junio 2026", color: "black" },
+      { id: "ann03", title: "Convivencia y áreas comunes", body: "Se recuerda respetar pasos peatonales, recoger residuos, cuidar mascotas y reportar lámparas o áreas sucias.", level: "Convivencia", date: "29 mayo 2026", color: "red" }
+    ];
+
+    const incidents = [
+      { id: "inc01", title: "Portón vehicular lento", detail: "El motor tarda más de lo normal en cerrar. Requiere revisión preventiva.", priority: "Alta", date: "Hoy", icon: "⚠️", color: "red" },
+      { id: "inc02", title: "Control de portón pendiente", detail: "Control CTRL-004 pendiente de validación de apertura.", priority: "Media", date: "Hoy", icon: "🔑", color: "indigo" },
+      { id: "inc03", title: "Área común sucia", detail: "Se detectaron residuos en zona de contenedores.", priority: "Media", date: "Hoy", icon: "🗑️", color: "mint" },
+      { id: "inc04", title: "Lámpara apagada", detail: "Luminaria sin funcionamiento en pasillo interior.", priority: "Media", date: "Ayer", icon: "💡", color: "yellow" },
+      { id: "inc05", title: "Mascota sin correa", detail: "Reporte de mascota en área común sin sujeción.", priority: "Media", date: "Ayer", icon: "🐾", color: "pink" }
+    ];
+
+    const visitors = [
+      { id: "vis01", name: "Paquetería", detail: "Entrega para Casa 03", time: "10:42", status: "Registrado", icon: "📦", color: "blue" },
+      { id: "vis02", name: "Técnico hidráulico", detail: "Revisión de cuarto de bombas", time: "12:15", status: "Servicio", icon: "🔧", color: "orange" },
+      { id: "vis03", name: "Comida", detail: "Pedido para Casa 01 con QR temporal", time: "14:05", status: "QR", icon: "🥡", color: "orange" },
+      { id: "vis04", name: "Técnico internet", detail: "Servicio programado para Casa 05", time: "15:30", status: "Temporal", icon: "📶", color: "blue" }
+    ];
+
+    const activityLog = [
+      { id: "log01", title: "QR de servicio generado", detail: "Acceso temporal preparado para entrega o proveedor externo.", icon: "▦", color: "black" },
+      { id: "log02", title: "Control de portón verificado", detail: "Control asignado a Casa 04 con estado activo.", icon: "🔑", color: "indigo" },
+      { id: "log03", title: "CCTV acceso principal verificado", detail: "Cámara 01 lista para conexión por IP local.", icon: "🎥", color: "cyan" },
+      { id: "log04", title: "Rondín nocturno completado", detail: "Acceso, pasillos y área común sin novedad.", icon: "🌙", color: "purple" }
+    ];
+
+    function colorValue(color) {
+      return colors[color] || color || "#ffffff";
+    }
+
+    function tintStyle(color, opacity = 0.14) {
+      const hex = colorValue(color);
+      return `background:${hex}${Math.round(opacity * 255).toString(16).padStart(2, "0")}; color:${hex};`;
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function initTabs() {
+      document.querySelectorAll(".tab").forEach(tab => {
+        tab.addEventListener("click", () => {
+          const target = tab.dataset.tab;
+
+          document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+          document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+
+          tab.classList.add("active");
+          document.getElementById(target).classList.add("active");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      });
+    }
+
+    function renderFocusChips() {
+      const container = document.getElementById("focusChips");
+      container.innerHTML = focusItems.map(item => `
+        <button class="chip ${item.color}" onclick="openFocus('${item.id}')">
+          <span>${item.icon}</span>
+          <span>${item.title}</span>
+        </button>
+      `).join("");
+    }
+
+    function renderOperations() {
+      const container = document.getElementById("operationStrip");
+      container.innerHTML = operations.map(item => `
+        <button class="op-card glass" onclick="openOperation('${item.id}')">
+          <div class="op-icon" style="color:${colorValue(item.color)}">${item.icon}</div>
+          <div class="op-value">${item.value}</div>
+          <div class="op-title">${item.title}</div>
+        </button>
+      `).join("");
+    }
+
+    function renderMetrics() {
+      const metrics = [
+        { title: "Cuota pendiente", value: `$${state.pendingFee}`, icon: "💳", color: "orange" },
+        { title: "Incidencias", value: `${state.openIncidents}`, icon: "!", color: "red" },
+        { title: "Visitantes", value: `${state.visitorsToday}`, icon: "●●", color: "blue" },
+        { title: "Agua", value: `${state.waterLevel}%`, icon: "💧", color: state.waterLevel < 35 ? "red" : "green" }
+      ];
+
+      document.getElementById("metricsGrid").innerHTML = metrics.map(item => `
+        <article class="metric glass">
+          <div class="circle-icon" style="${tintStyle(item.color)}">${item.icon}</div>
+          <div>
+            <div class="metric-value">${item.value}</div>
+            <div class="metric-title">${item.title}</div>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderCompactAnnouncement() {
+      const item = announcements[0];
+      document.getElementById("compactAnnouncement").innerHTML = `
+        <div class="section-head">
+          <h2>Comunicado principal</h2>
+          <p>Resumen oficial más reciente</p>
+        </div>
+        <article class="glass info-card">
+          <h3 style="margin:0 0 8px;font-size:21px;">${escapeHtml(item.title)}</h3>
+          <p style="color:var(--muted);font-size:15px;line-height:1.35;margin:0;">${escapeHtml(item.body)}</p>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
+            <span class="pill" style="${tintStyle(item.color)}">🔔 ${escapeHtml(item.level)}</span>
+            <span style="font-size:12px;color:var(--muted);font-weight:700;">${escapeHtml(item.date)}</span>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderAnnouncements() {
+      document.getElementById("announcementsList").innerHTML = announcements.map(item => `
+        <article class="glass info-card">
+          <h3 style="margin:0 0 8px;font-size:21px;">${escapeHtml(item.title)}</h3>
+          <p style="color:var(--muted);font-size:16px;line-height:1.4;margin:0;">${escapeHtml(item.body)}</p>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
+            <span class="pill" style="${tintStyle(item.color)}">🔔 ${escapeHtml(item.level)}</span>
+            <span style="font-size:12px;color:var(--muted);font-weight:700;">${escapeHtml(item.date)}</span>
+          </div>
+        </article>
+      `).join("");
+
+      renderModules("communicationModules", modules.filter(m => ["Agua", "P. Civil", "Seguridad"].includes(m.shortTitle)));
+    }
+
+    function renderIncidents() {
+      document.getElementById("incidentsList").innerHTML = incidents.map(item => `
+        <button class="row glass" onclick="openIncident('${item.id}')">
+          <div class="circle-icon" style="${tintStyle(item.color)}">${item.icon}</div>
+          <div class="row-content">
+            <div style="display:flex;gap:8px;align-items:flex-start;">
+              <h3 style="flex:1;">${escapeHtml(item.title)}</h3>
+              <span class="pill" style="${tintStyle(item.color)}">${escapeHtml(item.priority)}</span>
+            </div>
+            <p>${escapeHtml(item.detail)}</p>
+            <small>${escapeHtml(item.date)}</small>
+          </div>
+        </button>
+      `).join("");
+
+      renderModules("incidentModules", modules.filter(m => ["Multas", "Limpieza", "Seguridad", "Portón"].includes(m.shortTitle)));
+    }
+
+    function renderVisitors() {
+      document.getElementById("visitorsList").innerHTML = visitors.map(item => `
+        <article class="row glass">
+          <div class="circle-icon" style="${tintStyle(item.color)}">${item.icon}</div>
+          <div class="row-content">
+            <div style="display:flex;align-items:flex-start;gap:8px;">
+              <h3 style="flex:1;">${escapeHtml(item.name)}</h3>
+              <span class="pill" style="${tintStyle(item.color)}">${escapeHtml(item.status)}</span>
+            </div>
+            <p>${escapeHtml(item.detail)}</p>
+            <small>${escapeHtml(item.time)}</small>
+          </div>
+        </article>
+      `).join("");
+
+      renderQRGrid();
+      renderCameraGrid();
+    }
+
+    function renderModules(targetId, list) {
+      document.getElementById(targetId).innerHTML = list.map(item => moduleCardHTML(item)).join("");
+    }
+
+    function moduleCardHTML(item) {
+      return `
+        <button class="module glass" onclick="openModule('${item.id}')">
+          <div class="module-top">
+            <div class="module-icon" style="background:linear-gradient(135deg,${colorValue(item.color)},rgba(255,255,255,0.22));">${item.icon}</div>
+            <div class="module-metric">
+              ${escapeHtml(item.metric)}
+              <br />
+              <span class="status" style="${tintStyle(item.color)}">${escapeHtml(item.status)}</span>
+            </div>
+          </div>
+          <h3>${escapeHtml(item.shortTitle)}</h3>
+          <p>${escapeHtml(item.summary)}</p>
+          <div class="ai-hint">
+            <span>✦ ${escapeHtml(item.aiHint)}</span>
+            <span style="color:${colorValue(item.color)}">›</span>
+          </div>
+        </button>
+      `;
+    }
+
+    function renderQRGrid() {
+      document.getElementById("qrGrid").innerHTML = qrAccesses.map(item => `
+        <button class="module glass" onclick="openQR('${item.id}')">
+          <div class="module-top">
+            <div class="module-icon" style="background:linear-gradient(135deg,${colorValue(item.color)},rgba(255,255,255,0.22));">${item.icon}</div>
+            <div class="module-metric">
+              <span class="status" style="${tintStyle(item.color)}">${escapeHtml(item.code)}</span>
+            </div>
+          </div>
+          <h3>${escapeHtml(item.serviceType)}</h3>
+          <p>Destino: ${escapeHtml(item.house)}</p>
+          <p style="margin-top:8px;">${escapeHtml(item.instruction)}</p>
+        </button>
+      `).join("");
+    }
+
+    function renderCameraGrid() {
+      document.getElementById("cameraGrid").innerHTML = cameras.map(item => `
+        <button class="module glass" onclick="openCamera('${item.id}')">
+          <div class="module-top">
+            <div class="module-icon" style="background:linear-gradient(135deg,${colorValue(item.color)},rgba(0,0,0,0.30));">${item.icon}</div>
+            <div class="module-metric">
+              IP local
+              <br />
+              <span class="status" style="${tintStyle(item.color)}">${escapeHtml(item.ipAddress)}</span>
+            </div>
+          </div>
+          <h3>${escapeHtml(item.name)}</h3>
+          <p>${escapeHtml(item.location)}</p>
+          <p style="margin-top:8px;">${escapeHtml(item.summary)}</p>
+        </button>
+      `).join("");
+    }
+
+    function renderProfile() {
+      const resident = residents.find(r => r.id === state.activeResidentId) || residents[0];
+      const owners = residents.filter(r => r.type === "Dueño").length;
+      const tenants = residents.filter(r => r.type === "Inquilino").length;
+      const activeControls = gateControls.filter(c => c.status === "Activo").length;
+      const pendingFines = fines.filter(f => f.status !== "Pagada").length;
+
+      document.getElementById("profileCard").innerHTML = `
+        <div class="profile-house-icon">🏠</div>
+        <h1>${escapeHtml(resident.house)}</h1>
+        <p>${escapeHtml(resident.name)} · ${escapeHtml(resident.type)}</p>
+        <span class="login-pill">Sesión iniciada</span>
+      `;
+
+      document.getElementById("profileInfo").innerHTML = [
+        { title: "Tiempo viviendo", value: resident.livingTime, icon: "⏱️", color: resident.color },
+        { title: "Personas", value: resident.peopleCount, icon: "●●", color: resident.color },
+        { title: "Estado", value: resident.status, icon: "✓", color: "green" },
+        { title: "Casa", value: resident.house, icon: "⌂", color: "blue" }
+      ].map(item => `
+        <article class="metric glass" style="min-height:118px;">
+          <div class="circle-icon" style="${tintStyle(item.color)}">${item.icon}</div>
+          <div>
+            <div class="metric-value" style="font-size:24px;">${escapeHtml(item.value)}</div>
+            <div class="metric-title" style="font-size:14px;">${escapeHtml(item.title)}</div>
+          </div>
+        </article>
+      `).join("");
+
+      document.getElementById("registryCounters").innerHTML = [
+        { title: "Dueños", value: owners, icon: "🏠", color: "blue" },
+        { title: "Inquilinos", value: tenants, icon: "●", color: "teal" },
+        { title: "Controles", value: activeControls, icon: "🔑", color: "indigo" },
+        { title: "Multas", value: pendingFines, icon: "📄", color: "red" }
+      ].map(item => `
+        <article class="op-card glass" style="width:auto;height:96px;">
+          <div class="op-icon" style="color:${colorValue(item.color)}">${item.icon}</div>
+          <div class="op-value">${item.value}</div>
+          <div class="op-title">${item.title}</div>
+        </article>
+      `).join("");
+
+      document.getElementById("registryRows").innerHTML = `
+        <button class="row glass" onclick="openResident('${resident.id}')">
+          <div class="circle-icon" style="${tintStyle('blue')}">🏠</div>
+          <div class="row-content">
+            <h3>Bitácora de residentes</h3>
+            <p>${owners} dueños · ${tenants} inquilinos · tiempo de residencia registrado</p>
+          </div>
+        </button>
+        <button class="row glass" onclick="openGateControl('${gateControls[0].id}')">
+          <div class="circle-icon" style="${tintStyle('indigo')}">🔑</div>
+          <div class="row-content">
+            <h3>Controles del portón</h3>
+            <p>${gateControls.length} controles registrados · ${activeControls} activos</p>
+          </div>
+        </button>
+        <button class="row glass" onclick="openFine('${fines[0].id}')">
+          <div class="circle-icon" style="${tintStyle('red')}">📄</div>
+          <div class="row-content">
+            <h3>Registro de multas</h3>
+            <p>${fines.length} multas registradas · ${pendingFines} pendientes</p>
+          </div>
+        </button>
+      `;
+
+      document.getElementById("activityLog").innerHTML = activityLog.map(entry => `
+        <article class="row glass">
+          <div class="circle-icon" style="${tintStyle(entry.color)}">${entry.icon}</div>
+          <div class="row-content">
+            <h3>${escapeHtml(entry.title)}</h3>
+            <p>${escapeHtml(entry.detail)}</p>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function openModal(html) {
+      document.getElementById("modalContent").innerHTML = html;
+      document.getElementById("modalBackdrop").classList.add("active");
+    }
+
+    function closeModal() {
+      document.getElementById("modalBackdrop").classList.remove("active");
+      document.getElementById("modalContent").innerHTML = "";
+    }
+
+    document.getElementById("modalBackdrop").addEventListener("click", event => {
+      if (event.target.id === "modalBackdrop") closeModal();
+    });
+
+    function heroHTML(icon, title, subtitle, color) {
+      return `
+        <div class="modal-hero" style="background:linear-gradient(135deg,${colorValue(color)},rgba(255,255,255,0.16));">
+          <div>
+            <div class="modal-hero-icon">${icon}</div>
+            <h2>${escapeHtml(title)}</h2>
+            <p>${escapeHtml(subtitle)}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function infoHTML(title, value, color) {
+      return `
+        <div class="info-card glass">
+          <small>${escapeHtml(title)}</small>
+          <p>${escapeHtml(value)}</p>
+        </div>
+      `;
+    }
+
+    function actionsHTML(actions, color) {
+      return `
+        <div class="section-head" style="margin-top:18px;">
+          <h2 style="font-size:22px;">Acciones disponibles</h2>
+          <p>Flujo operativo sugerido</p>
+        </div>
+        <div class="action-list">
+          ${actions.map(action => `
+            <div class="action-item">
+              <span style="color:${colorValue(color)}">✓</span>
+              <span>${escapeHtml(action)}</span>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function openFocus(id) {
+      const item = focusItems.find(x => x.id === id);
+      if (!item) return;
+
+      openModal(`
+        ${heroHTML(item.icon, item.title, item.subtitle, item.color)}
+        ${infoHTML("Resumen", item.detail, item.color)}
+        ${actionsHTML(item.actions, item.color)}
+      `);
+    }
+
+    function openOperation(id) {
+      const item = operations.find(x => x.id === id);
+      if (!item) return;
+
+      openModal(`
+        ${heroHTML(item.icon, item.title, "Operación diaria", item.color)}
+        ${infoHTML("Registro actual", item.value, item.color)}
+        ${infoHTML("Descripción", item.detail, item.color)}
+        ${actionsHTML(item.actions, item.color)}
+      `);
+    }
+
+    function openModule(id) {
+      const item = modules.find(x => x.id === id);
+      if (!item) return;
+
+      openModal(`
+        ${heroHTML(item.icon, item.title, item.status, item.color)}
+        ${infoHTML("Descripción", item.description, item.color)}
+        ${infoHTML("Resumen", item.summary, item.color)}
+        ${infoHTML("Métrica", item.metric, item.color)}
+        ${actionsHTML(item.features, item.color)}
+      `);
+    }
+
+    function openIncident(id) {
+      const item = incidents.find(x => x.id === id);
+      if (!item) return;
+
+      openModal(`
+        ${heroHTML(item.icon, item.title, item.priority, item.color)}
+        ${infoHTML("Detalle", item.detail, item.color)}
+        ${infoHTML("Fecha", item.date, item.color)}
+      `);
+    }
+
+    function openCamera(id) {
+      const item = cameras.find(x => x.id === id);
+      if (!item) return;
+
+      openModal(`
+        ${heroHTML(item.icon, item.name, "IP local", item.color)}
+        ${infoHTML("Ubicación", item.location, item.color)}
+        ${infoHTML("IP local", item.ipAddress, item.color)}
+        ${infoHTML("Vista web", item.webURL, item.color)}
+        ${infoHTML("RTSP", item.rtspURL, item.color)}
+        <iframe src="${item.webURL}" title="${escapeHtml(item.name)}"></iframe>
+        <button class="primary-btn" onclick="window.open('${item.webURL}', '_blank')">Abrir IP de cámara</button>
+        ${infoHTML("Nota técnica", "Para ver la cámara, el celular debe estar conectado a la misma red local. Si la web está en HTTPS y la cámara usa HTTP, algunos navegadores pueden bloquear la vista embebida; el botón externo suele ser más confiable.", item.color)}
+      `);
+    }
+
+    function openQR(id) {
+      const item = qrAccesses.find(x => x.id === id);
+      if (!item) return;
+
+      const payload = encodeURIComponent(
+        `VILLAS TERRA III\nDESTINO: ${item.house}\nSERVICIO: ${item.serviceType}\nCODIGO: ${item.code}\nINSTRUCCION: ${item.instruction}\nVALIDEZ: ${item.validity}`
+      );
+
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${payload}`;
+
+      openModal(`
+        ${heroHTML(item.icon, item.serviceType, item.house, item.color)}
+        <div class="qr-box">
+          <img src="${qrUrl}" alt="QR ${escapeHtml(item.code)}" />
+        </div>
+        ${infoHTML("Código", item.code, item.color)}
+        ${infoHTML("Instrucción", item.instruction, item.color)}
+        ${infoHTML("Validez", item.validity, item.color)}
+        ${infoHTML("Uso recomendado", "El proveedor escanea el QR en acceso. La casa recibe aviso y sale a atender comida, gas, albañil, internet o servicio solicitado.", item.color)}
+      `);
+    }
+
+    function openResident(id) {
+      const item = residents.find(x => x.id === id);
+      if (!item) return;
+
+      openModal(`
+        ${heroHTML("🏠", item.house, item.type, item.color)}
+        ${infoHTML("Responsable", item.name, item.color)}
+        ${infoHTML("Tiempo viviendo", item.livingTime, item.color)}
+        ${infoHTML("Personas registradas", String(item.peopleCount), item.color)}
+        ${infoHTML("Estado administrativo", item.status, item.color)}
+        ${infoHTML("Observaciones", item.notes, item.color)}
+      `);
+    }
+
+    function openGateControl(id) {
+      const item = gateControls.find(x => x.id === id);
+      if (!item) return;
+
+      openModal(`
+        ${heroHTML("🔑", item.code, item.status, item.color)}
+        ${infoHTML("Casa asignada", item.house, item.color)}
+        ${infoHTML("Responsable", item.responsible, item.color)}
+        ${infoHTML("Tipo", item.type, item.color)}
+        ${infoHTML("Última revisión", item.lastCheck, item.color)}
+        ${infoHTML("Observaciones", item.notes, item.color)}
+      `);
+    }
+
+    function openFine(id) {
+      const item = fines.find(x => x.id === id);
+      if (!item) return;
+
+      openModal(`
+        ${heroHTML("📄", item.concept, item.status, item.color)}
+        ${infoHTML("Casa", item.house, item.color)}
+        ${infoHTML("Monto", item.amount, item.color)}
+        ${infoHTML("Fecha", item.date, item.color)}
+        ${infoHTML("Motivo", item.reason, item.color)}
+        ${infoHTML("Evidencia", item.evidence, item.color)}
+      `);
+    }
+
+    function init() {
+      initTabs();
+      renderFocusChips();
+      renderOperations();
+      renderMetrics();
+      renderCompactAnnouncement();
+      renderAnnouncements();
+      renderIncidents();
+      renderVisitors();
+      renderProfile();
+    }
+
+    init();
+  </script>
+</body>
+</html>
